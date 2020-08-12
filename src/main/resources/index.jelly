@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+    run some scripts whenever node online status changes, even temporarily.
+</div>

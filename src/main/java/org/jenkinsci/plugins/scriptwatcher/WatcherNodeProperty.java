@@ -21,58 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.scriptwatcher;
 
 import hudson.Extension;
 import hudson.model.Node;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
-import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-/**
- * Configure list of email addresses as a property of a Node to be used for
- * notification purposes.
- *
- * @author ogondza
- */
+
 public class WatcherNodeProperty extends NodeProperty<Node> {
 
-    private final String onlineAddresses;
-    private final String offlineAddresses;
+    private final String scripts;
 
     @DataBoundConstructor
-    public WatcherNodeProperty(
-            final String onlineAddresses, final String offlineAddresses
-    ) {
-
-        this.onlineAddresses = onlineAddresses;
-        this.offlineAddresses = offlineAddresses;
+    public WatcherNodeProperty(final String scripts) {
+        this.scripts = scripts;
     }
 
-    public String getOnlineAddresses() {
-
-        return onlineAddresses;
+    public String getScripts() {
+        return scripts;
     }
 
-    public String getOfflineAddresses() {
-
-        return offlineAddresses;
-    }
 
     @Extension
     public static class DescriptorImpl extends NodePropertyDescriptor {
 
-        public static final String OFFLINE_ADDRESSES = "offlineAddresses";
-        public static final String ONLINE_ADDRESSES = "onlineAddresses";
-
         @Override
         public boolean isApplicable(Class<? extends Node> nodeType) {
-
             return true;
         }
 
@@ -82,31 +61,19 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
                 final JSONObject formData
         ) throws FormException {
 
-            final String onlineAddresses = formData.getString(ONLINE_ADDRESSES);
-            final String offlineAddresses = formData.getString(OFFLINE_ADDRESSES);
+            final String scripts = formData.getString("scripts");
 
-            assert onlineAddresses != null;
-            assert offlineAddresses != null;
+            assert scripts != null;
 
-            if (onlineAddresses.isEmpty() && offlineAddresses.isEmpty()) return null;
+            if (scripts.isEmpty()) return null;
 
-            return new WatcherNodeProperty(onlineAddresses, offlineAddresses);
+            return new WatcherNodeProperty(scripts);
         }
 
-        public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
-
-            return MailWatcherMailer.validateMailAddresses(value);
-        }
-
-        public FormValidation doCheckOfflineAddresses(@QueryParameter String value) {
-
-            return MailWatcherMailer.validateMailAddresses(value);
-        }
 
         @Override
         public String getDisplayName() {
-
-            return "Notify when Node online status changes";
+            return "run script when Node offline";
         }
     }
 }
