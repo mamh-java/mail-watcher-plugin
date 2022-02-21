@@ -103,7 +103,8 @@ public class WatcherItemListener extends ItemListener {
             final Map<String, String> pairs = super.pairs();
             final String historyUrl = qywechat.configHistory().lastChangeDiffUrl(job);
             if (historyUrl != null) {
-                pairs.put("Change", qywechat.absoluteUrl(historyUrl).toString());
+                String url = qywechat.absoluteUrl(historyUrl).toString();
+                pairs.put("Change", "[show Diff ](" + url + ")");
             }
             return pairs;
         }
