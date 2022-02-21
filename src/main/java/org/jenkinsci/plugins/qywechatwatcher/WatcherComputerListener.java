@@ -140,14 +140,9 @@ public class WatcherComputerListener extends ComputerListener {
             }
 
             private static WatcherNodeProperty getWatcherNodeProperty(final Computer computer) {
-
                 final Node node = computer.getNode();
                 if (node == null) return null;
-
-                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties = (node instanceof Jenkins)
-                        ? ((Jenkins) node).getGlobalNodeProperties()
-                        : node.getNodeProperties();
-
+                final DescribableList<NodeProperty<?>, NodePropertyDescriptor> properties = node.getNodeProperties();
                 return properties.get(WatcherNodeProperty.class);
             }
         }
