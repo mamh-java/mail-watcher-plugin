@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.qywechatwatcher;
 
 import hudson.model.User;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,7 +41,7 @@ public abstract class QywechatWatcherNotification {
 
     private static final Logger LOGGER = Logger.getLogger(QywechatWatcherNotification.class.getName());
 
-    private static final String MAIL_WATCHER_PLUGIN = "qywechat-watcher-plugin: ";
+    private static final String WATCHER_PLUGIN = "[qywechat-watcher-plugin]: ";
 
     final private String subject;
     final private String body;
@@ -98,7 +99,7 @@ public abstract class QywechatWatcherNotification {
     }
 
     public final String getMailSubject() {
-        return MAIL_WATCHER_PLUGIN + this.getSubject();
+        return WATCHER_PLUGIN + this.getSubject();
     }
 
     public final String getMailBody() {
@@ -111,9 +112,10 @@ public abstract class QywechatWatcherNotification {
     }
 
     protected @Nonnull Map<String, String> pairs() {
-        final Map<String, String> pairs = new HashMap<>(2);
-        pairs.put("Url", "[" + this.getArtefactUrl()+ "](" + this.getArtefactUrl() + ")");
+        final Map<String, String> pairs = new HashMap<>(3);
+        pairs.put("Date", new Date().toString());
         pairs.put("Initiator", this.getInitiator().getId());
+        pairs.put("Url", "[" + this.getArtefactUrl()+ "](" + this.getArtefactUrl() + ")");
         return pairs;
     }
 
