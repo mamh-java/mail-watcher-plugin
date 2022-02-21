@@ -112,7 +112,7 @@ public abstract class QywechatWatcherNotification {
 
     protected @Nonnull Map<String, String> pairs() {
         final Map<String, String> pairs = new HashMap<>(2);
-        pairs.put("Url", this.getArtefactUrl());
+        pairs.put("Url", "[" + this.getArtefactUrl()+ "](" + this.getArtefactUrl() + ")");
         pairs.put("Initiator", this.getInitiator().getId());
         return pairs;
     }

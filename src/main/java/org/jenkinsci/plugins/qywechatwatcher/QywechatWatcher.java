@@ -30,6 +30,7 @@ import hudson.Plugin;
 import hudson.model.User;
 import hudson.plugins.jobConfigHistory.JobConfigHistory;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -47,6 +48,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class QywechatWatcher {
@@ -99,22 +102,38 @@ public class QywechatWatcher {
         }
         if (urls.length == 0) return null;
 
-        String data = "";
+        String data = toJSONString(notification);
 
-        LOGGER.info("will send msg: ");
+        LOGGER.info("will send msg: " + data);
         for (String u : urls) {
             try {
                 String msg = push(u, data);
-                LOGGER.info("通知结果" + msg);
+                LOGGER.info("send msg result" + msg);
             } catch (HttpProcessException | KeyManagementException | NoSuchAlgorithmException e) {
-                LOGGER.info("通知异常" + e.getMessage());
+                LOGGER.info("send msg result" + e.getMessage());
                 e.printStackTrace();
             }
         }
         return "";
     }
 
-    public static String push(String url, String data) throws HttpProcessException, KeyManagementException, NoSuchAlgorithmException {
+    private String toJSONString(final QywechatWatcherNotification notification) {
+        //组装内容
+        StringBuilder content = new StringBuilder();
+        content.append("<font color=\"info\">" + notification.getMailSubject() + "</font>\n");
+        content.append(notification.getMailBody());
+        Map markdown = new HashMap<String, Object>();
+        markdown.put("content", content.toString());
+
+        Map data = new HashMap<String, Object>();
+        data.put("msgtype", "markdown");
+        data.put("markdown", markdown);
+
+        String req = JSONObject.fromObject(data).toString();
+        return req;
+    }
+
+    private static String push(String url, String data) throws HttpProcessException, KeyManagementException, NoSuchAlgorithmException {
         HttpConfig httpConfig;
         HttpClient httpClient;
         HttpClientBuilder httpClientBuilder = HttpClients.custom();

@@ -63,7 +63,6 @@ public class WatcherComputerListener extends ComputerListener {
 
     @Override
     public void onOffline(final Computer c, final OfflineCause cause) {
-
         if (cause == null) {
             onOffline(c);
             return;
