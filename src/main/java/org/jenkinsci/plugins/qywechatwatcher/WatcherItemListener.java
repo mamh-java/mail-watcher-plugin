@@ -41,20 +41,20 @@ import jenkins.model.Jenkins;
 @Extension
 public class WatcherItemListener extends ItemListener {
 
-    private final MailWatcherMailer mailer;
+    private final QywechatWatcher qywechat;
     private final String jenkinsRootUrl;
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public WatcherItemListener() {
-        this(new MailWatcherMailer(Jenkins.get()), Jenkins.get().getRootUrl());
+        this(new QywechatWatcher(Jenkins.get()), Jenkins.get().getRootUrl());
     }
 
-    public WatcherItemListener(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-        if (mailer == null) throw new IllegalArgumentException(
-                "No mailer provided"
+    public WatcherItemListener(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+        if (qywechat == null) throw new IllegalArgumentException(
+                "No qywechat provided"
         );
 
-        this.mailer = mailer;
+        this.qywechat = qywechat;
         this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
@@ -78,10 +78,10 @@ public class WatcherItemListener extends ItemListener {
     }
 
     private Notification.Builder getNotification() {
-        return new Notification.Builder(mailer, jenkinsRootUrl);
+        return new Notification.Builder(qywechat, jenkinsRootUrl);
     }
 
-    private static class Notification extends MailWatcherNotification {
+    private static class Notification extends QywechatWatcherNotification {
 
         private final @Nonnull
         Job<?, ?> job;
@@ -101,19 +101,19 @@ public class WatcherItemListener extends ItemListener {
         protected @Nonnull
         Map<String, String> pairs() {
             final Map<String, String> pairs = super.pairs();
-            final String historyUrl = mailer.configHistory().lastChangeDiffUrl(job);
+            final String historyUrl = qywechat.configHistory().lastChangeDiffUrl(job);
             if (historyUrl != null) {
-                pairs.put("Change", mailer.absoluteUrl(historyUrl).toString());
+                pairs.put("Change", qywechat.absoluteUrl(historyUrl).toString());
             }
             return pairs;
         }
 
-        private static class Builder extends MailWatcherNotification.Builder {
+        private static class Builder extends QywechatWatcherNotification.Builder {
 
             private Job<?, ?> job;
 
-            public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-                super(mailer, jenkinsRootUrl);
+            public Builder(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+                super(qywechat, jenkinsRootUrl);
             }
 
             @Override

@@ -27,7 +27,6 @@ import hudson.model.User;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
@@ -37,9 +36,9 @@ import javax.mail.internet.MimeMessage;
 
 
 
-public abstract class MailWatcherNotification {
+public abstract class QywechatWatcherNotification {
 
-    private static final Logger LOGGER = Logger.getLogger(MailWatcherNotification.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(QywechatWatcherNotification.class.getName());
 
     private static final String MAIL_WATCHER_PLUGIN = "qywechat-watcher-plugin: ";
 
@@ -53,9 +52,9 @@ public abstract class MailWatcherNotification {
 
     final private String jenkinsRootUrl;
 
-    final protected MailWatcherMailer mailer;
+    final protected QywechatWatcher qywechat;
 
-    public MailWatcherNotification(final Builder builder) {
+    public QywechatWatcherNotification(final Builder builder) {
         this.subject = builder.subject;
         this.body = builder.body;
         this.recipients = builder.recipients;
@@ -63,46 +62,38 @@ public abstract class MailWatcherNotification {
         this.resourceName = builder.resourceName;
         this.initiator = builder.initiator;
         this.jenkinsRootUrl = builder.jenkinsRootUrl;
-        this.mailer = builder.mailer;
+        this.qywechat = builder.qywechat;
     }
 
     protected String getSubject() {
-
         return subject;
     }
 
     protected String getBody() {
-
         return body;
     }
 
     public String getRecipients() {
-
         return recipients;
     }
 
     public String getUrl() {
-
         return url;
     }
 
     public String getName() {
-
         return resourceName;
     }
 
     private String getArtefactUrl() {
-
         return jenkinsRootUrl + this.getUrl();
     }
 
     public User getInitiator() {
-
         return initiator;
     }
 
     protected boolean shouldNotify() {
-
         return recipients != null;
     }
 
@@ -120,7 +111,7 @@ public abstract class MailWatcherNotification {
     }
 
     protected @Nonnull Map<String, String> pairs() {
-        final Map<String, String> pairs = new HashMap<String, String>(2);
+        final Map<String, String> pairs = new HashMap<>(2);
         pairs.put("Url", this.getArtefactUrl());
         pairs.put("Initiator", this.getInitiator().getId());
         return pairs;
@@ -132,7 +123,7 @@ public abstract class MailWatcherNotification {
 
     public final void send() {
         try {
-            final MimeMessage msg = mailer.send(this);
+            final String msg = qywechat.send(this);
             if (msg != null) {
                 LOGGER.info("notified: " + this.getSubject());
             }
@@ -145,7 +136,7 @@ public abstract class MailWatcherNotification {
 
     public static abstract class Builder {
 
-        final protected MailWatcherMailer mailer;
+        final protected QywechatWatcher qywechat;
         final private String jenkinsRootUrl;
 
         private String subject = "";
@@ -156,9 +147,9 @@ public abstract class MailWatcherNotification {
         private String resourceName = "";
         private User initiator;
 
-        public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-            this.mailer = mailer;
-            this.initiator = mailer.getDefaultInitiator();
+        public Builder(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+            this.qywechat = qywechat;
+            this.initiator = qywechat.getDefaultInitiator();
             this.jenkinsRootUrl = jenkinsRootUrl == null ? "/" : jenkinsRootUrl;
         }
 

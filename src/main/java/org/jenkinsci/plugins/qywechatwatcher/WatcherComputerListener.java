@@ -39,20 +39,20 @@ import jenkins.model.Jenkins;
 @Extension
 public class WatcherComputerListener extends ComputerListener {
 
-    private final MailWatcherMailer mailer;
+    private final QywechatWatcher qywechat;
     private final String jenkinsRootUrl;
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public WatcherComputerListener() {
-        this(new MailWatcherMailer(Jenkins.get()), Jenkins.get().getRootUrl());
+        this(new QywechatWatcher(Jenkins.get()), Jenkins.get().getRootUrl());
     }
 
-    public WatcherComputerListener(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-        if (mailer == null) throw new IllegalArgumentException(
-                "No mailer provided"
+    public WatcherComputerListener(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+        if (qywechat == null) throw new IllegalArgumentException(
+                "No qywechat provided"
         );
 
-        this.mailer = mailer;
+        this.qywechat = qywechat;
         this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
@@ -92,10 +92,10 @@ public class WatcherComputerListener extends ComputerListener {
     }
 
     private Notification.Builder getNotification() {
-        return new Notification.Builder(mailer, jenkinsRootUrl);
+        return new Notification.Builder(qywechat, jenkinsRootUrl);
     }
 
-    private static class Notification extends MailWatcherNotification {
+    private static class Notification extends QywechatWatcherNotification {
 
         public Notification(final Builder builder) {
             super(builder);
@@ -106,13 +106,12 @@ public class WatcherComputerListener extends ComputerListener {
             return String.format("Computer %s %s", getName(), super.getSubject());
         }
 
-        private static class Builder extends MailWatcherNotification.Builder {
+        private static class Builder extends QywechatWatcherNotification.Builder {
 
             private boolean online;
 
-            public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-
-                super(mailer, jenkinsRootUrl);
+            public Builder(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+                super(qywechat, jenkinsRootUrl);
             }
 
             public Builder online(final boolean online) {

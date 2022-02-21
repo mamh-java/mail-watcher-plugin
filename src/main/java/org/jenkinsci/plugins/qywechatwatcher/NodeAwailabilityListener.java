@@ -33,8 +33,6 @@ import hudson.model.Run;
 import hudson.model.User;
 import hudson.model.listeners.RunListener;
 import hudson.slaves.OfflineCause;
-import hudson.tasks.Mailer;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -53,20 +51,20 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
             "org.jenkinsci.plugins.workflow.job.WorkflowRun"
     );
 
-    private final MailWatcherMailer mailer;
+    private final QywechatWatcher qywechat;
     private final String jenkinsRootUrl;
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public NodeAwailabilityListener() {
-        this(new MailWatcherMailer(Jenkins.get()), Jenkins.get().getRootUrl());
+        this(new QywechatWatcher(Jenkins.get()), Jenkins.get().getRootUrl());
     }
 
-    public NodeAwailabilityListener(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-        if (mailer == null) throw new IllegalArgumentException(
-                "No mailer provided"
+    public NodeAwailabilityListener(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+        if (qywechat == null) throw new IllegalArgumentException(
+                "No qywechat provided"
         );
 
-        this.mailer = mailer;
+        this.qywechat = qywechat;
         this.jenkinsRootUrl = jenkinsRootUrl;
     }
 
@@ -95,7 +93,7 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
         if (!isIdle(computer)) return;
 
-        String address = user.getProperty(Mailer.UserProperty.class).getAddress();
+        String address = user.getDisplayName();
 
         final String subject = "Jenkins computer '" + computer.getDisplayName() + "' you have put offline is no longer occupied";
         getNotification().subject(subject).url(computer.getUrl()).recipients(address).initiator(user).send(r);
@@ -136,19 +134,19 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     }
 
     private Notification.Builder getNotification() {
-        return new Notification.Builder(mailer, jenkinsRootUrl);
+        return new Notification.Builder(qywechat, jenkinsRootUrl);
     }
 
-    private static class Notification extends MailWatcherNotification {
+    private static class Notification extends QywechatWatcherNotification {
 
         public Notification(Builder builder) {
             super(builder);
         }
 
-        private static class Builder extends MailWatcherNotification.Builder {
+        private static class Builder extends QywechatWatcherNotification.Builder {
 
-            public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-                super(mailer, jenkinsRootUrl);
+            public Builder(final QywechatWatcher qywechat, final String jenkinsRootUrl) {
+                super(qywechat, jenkinsRootUrl);
             }
 
             @Override

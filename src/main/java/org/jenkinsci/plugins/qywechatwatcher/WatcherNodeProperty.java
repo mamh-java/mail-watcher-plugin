@@ -29,13 +29,15 @@ import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.logging.Logger;
+
 
 public class WatcherNodeProperty extends NodeProperty<Node> {
+    private static final Logger LOGGER = Logger.getLogger(WatcherNodeProperty.class.getName());
 
     private final String onlineAddresses;
     private final String offlineAddresses;
@@ -80,11 +82,13 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
         }
 
         public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
-            return MailWatcherMailer.validateMailAddresses(value);
+            LOGGER.info("doCheckOnlineAddresses: " + value);
+            return FormValidation.ok();
         }
 
         public FormValidation doCheckOfflineAddresses(@QueryParameter String value) {
-            return MailWatcherMailer.validateMailAddresses(value);
+            LOGGER.info("doCheckOfflineAddresses: " + value);
+            return FormValidation.ok();
         }
 
         @Override

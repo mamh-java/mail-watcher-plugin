@@ -34,8 +34,11 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.logging.Logger;
+
 
 public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
+    private static final Logger LOGGER = Logger.getLogger(WatcherJobProperty.class.getName());
 
     private final String watcherAddresses;
 
@@ -69,7 +72,8 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
         }
 
         public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {
-            return MailWatcherMailer.validateMailAddresses(value);
+            LOGGER.info("doCheckWatcherAddresses: " + value);
+            return FormValidation.ok();
         }
 
         @Override
