@@ -1,114 +1,59 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>4.31</version>
+    </parent>
+
     <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>2.14</version>
-  </parent>
+    <artifactId>mail-watcher-plugin</artifactId>
+    <version>1.17-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+    <name>Mail Watcher Plugin</name>
+    <description>This plugin notifies configured email recipients on various events.</description>
+    <url>https://github.com/mamh-java/mail-watcher-plugin</url>
 
-  <groupId>org.jenkins-ci.plugins</groupId>
-  <artifactId>mail-watcher-plugin</artifactId>
-  <version>1.17-SNAPSHOT</version>
-  <packaging>hpi</packaging>
-  <name>Mail Watcher Plugin</name>
-  <description>This plugin notifies configured email recipients on various events.</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Mail+Watcher+Plugin</url>
+    <scm>
+        <connection>scm:git:https://github.com/mamh-java/mail-watcher-plugin.git</connection>
+        <developerConnection>scm:git:https://github.com/mamh-java/mail-watcher-plugin.git</developerConnection>
+        <url>https://github.com/mamh-java/mail-watcher-plugin</url>
+        <tag>HEAD</tag>
+    </scm>
 
-  <scm>
-    <connection>scm:git:git://github.com/jenkinsci/mail-watcher-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/mail-watcher-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/mail-watcher-plugin</url>
-    <tag>HEAD</tag>
-  </scm>
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
+    <properties>
+        <jenkins.version>2.303.1</jenkins.version>
+        <java.level>8</java.level>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <properties>
-    <jenkins.version>1.609</jenkins.version>
-    <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
-    <java.level>6</java.level>
+    <dependencies>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>mailer</artifactId>
+            <version>1.34</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jobConfigHistory</artifactId>
+            <version>2.26</version>
+            <optional>true</optional>
+        </dependency>
 
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <surefire.useFile>false</surefire.useFile>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>mailer</artifactId>
-      <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>maven-plugin</artifactId>
-      <version>2.11</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>jobConfigHistory</artifactId>
-      <version>2.0</version>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>1.2.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.2.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-core</artifactId>
-      <version>1.4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>1.4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.4.12</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci</groupId>
-      <artifactId>test-annotations</artifactId>
-      <version>1.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-test-harness-tools</artifactId>
-      <version>2.0</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    </dependencies>
 </project>
