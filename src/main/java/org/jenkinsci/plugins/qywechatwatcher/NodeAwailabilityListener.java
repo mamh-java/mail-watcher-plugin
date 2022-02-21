@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.qywechatwatcher;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
@@ -50,7 +50,7 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     private static final Logger LOGGER = Logger.getLogger(NodeAwailabilityListener.class.getName());
 
     private static final List<String> IGNORED_CLASSES = Arrays.asList(
-        "org.jenkinsci.plugins.workflow.job.WorkflowRun"
+            "org.jenkinsci.plugins.workflow.job.WorkflowRun"
     );
 
     private final MailWatcherMailer mailer;
@@ -58,18 +58,10 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public NodeAwailabilityListener() {
-
-        this(
-                new MailWatcherMailer(Jenkins.getInstance()),
-                Jenkins.getInstance().getRootUrl()
-        );
+        this(new MailWatcherMailer(Jenkins.get()), Jenkins.get().getRootUrl());
     }
 
-    public NodeAwailabilityListener(
-            final MailWatcherMailer mailer,
-            final String jenkinsRootUrl
-    ) {
-
+    public NodeAwailabilityListener(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
         if (mailer == null) throw new IllegalArgumentException(
                 "No mailer provided"
         );
@@ -91,7 +83,7 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
         Computer computer = computer(r);
         if (computer == null) {
-            String msg = String.format("Unable to identify the slave of %s (%s)", r,  r.getClass());
+            String msg = String.format("Unable to identify the slave of %s (%s)", r, r.getClass());
             LOGGER.log(Level.INFO, msg, new Exception());
             return;
         }
@@ -106,15 +98,11 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         String address = user.getProperty(Mailer.UserProperty.class).getAddress();
 
         final String subject = "Jenkins computer '" + computer.getDisplayName() + "' you have put offline is no longer occupied";
-        getNotification().subject(subject)
-                .url(computer.getUrl())
-                .recipients(address)
-                .initiator(user)
-                .send(r)
-        ;
+        getNotification().subject(subject).url(computer.getUrl()).recipients(address).initiator(user).send(r);
     }
 
-    private @CheckForNull User user(Computer computer) {
+    private @CheckForNull
+    User user(Computer computer) {
         OfflineCause cause = computer.getOfflineCause();
         if (cause instanceof OfflineCause.UserCause) {
             return ((OfflineCause.UserCause) cause).getUser();
@@ -123,7 +111,8 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
         return null;
     }
 
-    private @CheckForNull Computer computer(Run<?, ?> r) {
+    private @CheckForNull
+    Computer computer(Run<?, ?> r) {
         if (r instanceof AbstractBuild) {
             Node node = ((AbstractBuild<?, ?>) r).getBuiltOn();
             if (node != null) {
@@ -135,11 +124,11 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
 
     private boolean isIdle(Computer computer) {
         Thread current = Thread.currentThread();
-        for (Executor e: computer.getExecutors()) {
+        for (Executor e : computer.getExecutors()) {
             if (!e.isIdle() && e != current) return false;
         }
 
-        for (Executor e: computer.getOneOffExecutors()) {
+        for (Executor e : computer.getOneOffExecutors()) {
             if (!e.isIdle() && e != current) return false;
         }
 
@@ -147,7 +136,6 @@ public class NodeAwailabilityListener extends RunListener<Run<?, ?>> {
     }
 
     private Notification.Builder getNotification() {
-
         return new Notification.Builder(mailer, jenkinsRootUrl);
     }
 

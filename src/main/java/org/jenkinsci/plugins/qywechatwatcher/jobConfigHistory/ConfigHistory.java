@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher.jobConfigHistory;
+package org.jenkinsci.plugins.qywechatwatcher.jobConfigHistory;
 
 import hudson.model.Job;
 import hudson.plugins.jobConfigHistory.ConfigInfo;
@@ -34,20 +34,17 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
-/**
- * @author ogondza
- */
+
 public class ConfigHistory {
 
     private final JobConfigHistory plugin;
 
     public ConfigHistory(final JobConfigHistory plugin) {
-
         this.plugin = plugin;
     }
 
-    public @CheckForNull String lastChangeDiffUrl(final @Nonnull Job<?, ?> job) {
-
+    public @CheckForNull
+    String lastChangeDiffUrl(final @Nonnull Job<?, ?> job) {
         if (plugin == null) return null;
 
         final List<ConfigInfo> configs = storedConfigurations(job);
@@ -59,7 +56,8 @@ public class ConfigHistory {
         );
     }
 
-    private @CheckForNull List<ConfigInfo> storedConfigurations(final Job<?, ?> job) {
+    private @CheckForNull
+    List<ConfigInfo> storedConfigurations(final Job<?, ?> job) {
 
         final JobConfigHistoryProjectAction action = job.getAction(JobConfigHistoryProjectAction.class);
 

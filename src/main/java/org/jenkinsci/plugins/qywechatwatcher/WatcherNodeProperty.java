@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.qywechatwatcher;
 
 import hudson.Extension;
 import hudson.model.Node;
@@ -34,33 +34,23 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-/**
- * Configure list of email addresses as a property of a Node to be used for
- * notification purposes.
- *
- * @author ogondza
- */
+
 public class WatcherNodeProperty extends NodeProperty<Node> {
 
     private final String onlineAddresses;
     private final String offlineAddresses;
 
     @DataBoundConstructor
-    public WatcherNodeProperty(
-            final String onlineAddresses, final String offlineAddresses
-    ) {
-
+    public WatcherNodeProperty(final String onlineAddresses, final String offlineAddresses) {
         this.onlineAddresses = onlineAddresses;
         this.offlineAddresses = offlineAddresses;
     }
 
     public String getOnlineAddresses() {
-
         return onlineAddresses;
     }
 
     public String getOfflineAddresses() {
-
         return offlineAddresses;
     }
 
@@ -77,11 +67,7 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
         }
 
         @Override
-        public NodeProperty<?> newInstance(
-                final StaplerRequest req,
-                final JSONObject formData
-        ) throws FormException {
-
+        public NodeProperty<?> newInstance(final StaplerRequest req, final JSONObject formData) throws FormException {
             final String onlineAddresses = formData.getString(ONLINE_ADDRESSES);
             final String offlineAddresses = formData.getString(OFFLINE_ADDRESSES);
 
@@ -94,19 +80,16 @@ public class WatcherNodeProperty extends NodeProperty<Node> {
         }
 
         public FormValidation doCheckOnlineAddresses(@QueryParameter String value) {
-
             return MailWatcherMailer.validateMailAddresses(value);
         }
 
         public FormValidation doCheckOfflineAddresses(@QueryParameter String value) {
-
             return MailWatcherMailer.validateMailAddresses(value);
         }
 
         @Override
         public String getDisplayName() {
-
-            return "Notify when Node online status changes";
+            return "Qywechat when Node online status changes";
         }
     }
 }

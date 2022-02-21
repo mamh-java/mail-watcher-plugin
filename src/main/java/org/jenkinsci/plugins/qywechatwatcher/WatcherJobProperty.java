@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.qywechatwatcher;
 
 import hudson.Extension;
 import hudson.model.JobProperty;
@@ -34,24 +34,17 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-/**
- * Configure list of email addresses as a property of a Job to be used for
- * notification purposes.
- *
- * @author ogondza
- */
+
 public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
 
     private final String watcherAddresses;
 
     @DataBoundConstructor
     public WatcherJobProperty(final String watcherAddresses) {
-
         this.watcherAddresses = watcherAddresses;
     }
 
     public String getWatcherAddresses() {
-
         return watcherAddresses;
     }
 
@@ -59,37 +52,29 @@ public class WatcherJobProperty extends JobProperty<Job<?, ?>> {
     public static class DescriptorImpl extends JobPropertyDescriptor {
 
         @Override
-        public boolean isApplicable(
-                @SuppressWarnings("rawtypes") Class<? extends Job> jobType
-        ) {
-
+        public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends Job> jobType) {
             return true;
         }
 
         @Override
-        public JobProperty<?> newInstance(
-                final StaplerRequest req,
-                final JSONObject formData
-        ) throws FormException {
+        public JobProperty<?> newInstance(final StaplerRequest req, final JSONObject formData) throws FormException {
 
             final JSONObject watcherData = formData.getJSONObject("watcherEnabled");
             if (watcherData.isNullObject()) return null;
 
-            final String addresses = watcherData.getString( "watcherAddresses" );
+            final String addresses = watcherData.getString("watcherAddresses");
             if (addresses == null || addresses.isEmpty()) return null;
 
             return new WatcherJobProperty(addresses);
         }
 
         public FormValidation doCheckWatcherAddresses(@QueryParameter String value) {
-
             return MailWatcherMailer.validateMailAddresses(value);
         }
 
         @Override
         public String getDisplayName() {
-
-            return "Notify when Job configuration changes";
+            return "Qywechat when Job configuration changes";
         }
     }
 }

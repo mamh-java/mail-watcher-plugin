@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.qywechatwatcher;
 
 import hudson.Plugin;
 import hudson.model.User;
@@ -44,55 +44,56 @@ import javax.mail.internet.MimeMessage;
 
 import jenkins.model.Jenkins;
 
-import org.jenkinsci.plugins.mailwatcher.jobConfigHistory.ConfigHistory;
+import org.jenkinsci.plugins.qywechatwatcher.jobConfigHistory.ConfigHistory;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-/**
- * Send email notification.
- *
- * @author ogondza
- */
+
 public class MailWatcherMailer {
 
-    private final @Nonnull Mailer.DescriptorImpl mailerDescriptor;
-    private final @Nonnull Jenkins jenkins;
-    private final @Nonnull ConfigHistory configHistory;
+    private final @Nonnull
+    Mailer.DescriptorImpl mailerDescriptor;
+    private final @Nonnull
+    Jenkins jenkins;
+    private final @Nonnull
+    ConfigHistory configHistory;
 
-    /*package*/ MailWatcherMailer(final @Nonnull Jenkins jenkins) {
-
+    public MailWatcherMailer(final @Nonnull Jenkins jenkins) {
         this.jenkins = jenkins;
         this.mailerDescriptor = jenkins.getDescriptorByType(Mailer.DescriptorImpl.class);
         this.configHistory = new ConfigHistory((JobConfigHistory) plugin("jobConfigHistory"));
     }
 
-    /*package*/ @Nonnull User getDefaultInitiator() {
+    /*package*/
+    @Nonnull
+    User getDefaultInitiator() {
 
         final User current = User.current();
         return current != null
                 ? current
                 : User.getUnknown()
-        ;
+                ;
     }
 
-    /*package*/ @CheckForNull Plugin plugin(final String plugin) {
-
+    /*package*/
+    @CheckForNull
+    Plugin plugin(final String plugin) {
         return jenkins.getPlugin(plugin);
     }
 
-    /*package*/ @Nonnull URL absoluteUrl(final @Nonnull String url) {
-
+    /*package*/
+    @Nonnull
+    URL absoluteUrl(final @Nonnull String url) {
         try {
-
             return new URL(jenkins.getRootUrl() + url);
         } catch (MalformedURLException ex) {
-
             throw new AssertionError(ex);
         }
     }
 
-    /*package*/ @Nonnull ConfigHistory configHistory() {
-
+    /*package*/
+    @Nonnull
+    ConfigHistory configHistory() {
         return configHistory;
     }
 
@@ -101,10 +102,7 @@ public class MailWatcherMailer {
      *
      * @return sent MimeMessage or null if notification was not sent
      */
-    public MimeMessage send(final MailWatcherNotification notification) throws
-            MessagingException, AddressException
-    {
-
+    public MimeMessage send(final MailWatcherNotification notification) throws MessagingException, AddressException {
         if (!notification.shouldNotify()) return null;
 
         final InternetAddress[] recipients = InternetAddress.parse(
@@ -131,7 +129,7 @@ public class MailWatcherMailer {
     }
 
     @Restricted(NoExternalUse.class)
-    /*package*/ void send(final MimeMessage msg) throws MessagingException {
+        /*package*/ void send(final MimeMessage msg) throws MessagingException {
         Transport.send(msg);
     }
 
@@ -141,42 +139,28 @@ public class MailWatcherMailer {
      * @param addressesCandidate String representing list of addresses
      * @return FormValidation representing state of validation
      */
-    public static FormValidation validateMailAddresses(
-            final String addressesCandidate
-    ) {
-
+    public static FormValidation validateMailAddresses(final String addressesCandidate) {
         try {
-
             final InternetAddress[] addresses = InternetAddress.parse(
                     addressesCandidate, false
-             );
+            );
 
             if (addresses.length == 0) {
-
                 return FormValidation.warning("Empty address list provided");
             }
 
             return validateAddresses(addresses);
         } catch (AddressException ex) {
-
-            return FormValidation.error(
-                    "Invalid address provided: " + ex.getMessage ()
-            );
+            return FormValidation.error("Invalid address provided: " + ex.getMessage());
         }
     }
 
-    private static FormValidation validateAddresses(
-            final InternetAddress[] addresses
-    ) {
-
-        for (final InternetAddress address: addresses) {
-
+    private static FormValidation validateAddresses(final InternetAddress[] addresses) {
+        for (final InternetAddress address : addresses) {
             final String rawAddress = address.toString();
             if (rawAddress.indexOf("@") > 0) continue;
 
-            return FormValidation.error(
-                    rawAddress + " does not look like an email address"
-            );
+            return FormValidation.error(rawAddress + " does not look like an email address");
         }
 
         return FormValidation.ok();

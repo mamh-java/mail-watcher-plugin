@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.mailwatcher;
+package org.jenkinsci.plugins.qywechatwatcher;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
@@ -37,34 +37,19 @@ import javax.annotation.Nonnull;
 
 import jenkins.model.Jenkins;
 
-/**
- * Notify whenever Job configuration changes.
- *
- * Sends email to the list of recipients on following events: onRenamed,
- * onUpdated and onDeleted.
- *
- * @author ogondza
- */
+
 @Extension
 public class WatcherItemListener extends ItemListener {
 
-    private final @Nonnull MailWatcherMailer mailer;
+    private final MailWatcherMailer mailer;
     private final String jenkinsRootUrl;
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public WatcherItemListener() {
-
-        this(
-                new MailWatcherMailer(Jenkins.getInstance()),
-                Jenkins.getInstance().getRootUrl()
-        );
+        this(new MailWatcherMailer(Jenkins.get()), Jenkins.get().getRootUrl());
     }
 
-    public WatcherItemListener(
-            final MailWatcherMailer mailer,
-            final String jenkinsRootUrl
-    ) {
-
+    public WatcherItemListener(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
         if (mailer == null) throw new IllegalArgumentException(
                 "No mailer provided"
         );
@@ -75,38 +60,31 @@ public class WatcherItemListener extends ItemListener {
 
     @Override
     public void onRenamed(Item item, String oldName, String newName) {
-
         if (!(item instanceof Job<?, ?>)) return;
-
         final Job<?, ?> job = (Job<?, ?>) item;
-
         getNotification().subject("renamed from " + oldName).send(job);
     }
 
     @Override
     public void onUpdated(Item item) {
-
         if (!(item instanceof Job<?, ?>)) return;
-
         getNotification().subject("updated").send(item);
     }
 
     @Override
     public void onDeleted(Item item) {
-
         if (!(item instanceof Job<?, ?>)) return;
-
         getNotification().subject("deleted").send(item);
     }
 
     private Notification.Builder getNotification() {
-
         return new Notification.Builder(mailer, jenkinsRootUrl);
     }
 
     private static class Notification extends MailWatcherNotification {
 
-        private final @Nonnull Job<?, ?> job;
+        private final @Nonnull
+        Job<?, ?> job;
 
         public Notification(final Builder builder) {
 
@@ -116,20 +94,17 @@ public class WatcherItemListener extends ItemListener {
 
         @Override
         protected String getSubject() {
-
-            return String.format("Job %s %s", getName (), super.getSubject());
+            return String.format("Job %s %s", getName(), super.getSubject());
         }
 
         @Override
-        protected @Nonnull Map<String, String> pairs() {
+        protected @Nonnull
+        Map<String, String> pairs() {
             final Map<String, String> pairs = super.pairs();
-
             final String historyUrl = mailer.configHistory().lastChangeDiffUrl(job);
             if (historyUrl != null) {
-
                 pairs.put("Change", mailer.absoluteUrl(historyUrl).toString());
             }
-
             return pairs;
         }
 
@@ -138,21 +113,16 @@ public class WatcherItemListener extends ItemListener {
             private Job<?, ?> job;
 
             public Builder(final MailWatcherMailer mailer, final String jenkinsRootUrl) {
-
                 super(mailer, jenkinsRootUrl);
             }
 
             @Override
             public void send(final Object o) {
-
                 job = (Job<?, ?>) o;
 
-                final WatcherJobProperty property = job.getProperty(
-                        WatcherJobProperty.class
-                );
+                final WatcherJobProperty property = job.getProperty(WatcherJobProperty.class);
 
-                if (property!=null) {
-
+                if (property != null) {
                     recipients(property.getWatcherAddresses());
                 }
 
